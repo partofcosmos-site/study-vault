@@ -1,0 +1,14 @@
+{
+  "name": "study-vault-orchestrator",
+  "version": "1.0.0",
+  "scripts": {
+    "zero-to-hero": "ts-node scripts/zero_to_hero.ts",
+    "monitor": "ts-node scripts/zero_to_hero.ts --monitor",
+    "watch": "ts-node scripts/zero_to_hero.ts --watch"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  }
+}
