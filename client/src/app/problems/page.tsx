@@ -1,4 +1,6 @@
+'use client';
 import Link from "next/link";
+import { useState, useMemo } from "react";
 
 // Mock data for problems - no database needed
 const mockProblems = [
@@ -65,6 +67,19 @@ const difficultyColors: Record<string, string> = {
 };
 
 export default function ProblemsPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+
+  const filteredProblems = useMemo(() => {
+    return mockProblems.filter(problem => {
+      const matchesSearch = problem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        problem.topic.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        problem.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      const matchesSubject = !selectedSubject || problem.subject === selectedSubject;
+      return matchesSearch && matchesSubject;
+    });
+  }, [searchQuery, selectedSubject]);
+
   return (
     <div className="min-h-screen bg-[#0b0e14] text-white">
       {/* Header */}
@@ -73,7 +88,7 @@ export default function ProblemsPage() {
           <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             StudyVault
           </Link>
-          <nav className="flex gap-6">
+          <nav className="hidden md:flex gap-6">
             <Link href="/problems" className="text-indigo-400 font-medium">Problems</Link>
             <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors">Dashboard</Link>
             <Link href="/mission-control" className="text-green-400 font-mono text-sm">MISSION CONTROL</Link>
@@ -85,29 +100,54 @@ export default function ProblemsPage() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Problem Library</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Problem Library</h1>
           <p className="text-gray-400">Master {mockProblems.length}+ verified problems from JEE, NEET, and Olympiads</p>
+        </div>
+
+        {/* Search */}
+        <div className="mb-6">
+          <input
+            type="text"
+            placeholder="Search problems by title, topic, or tag..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50"
+          />
         </div>
 
         {/* Filters */}
         <div className="flex flex-wrap gap-3 mb-8">
-          <button className="px-4 py-2 bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 rounded-lg text-sm font-medium">
+          <button
+            onClick={() => setSelectedSubject(null)}
+            className={`px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${!selectedSubject
+              ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30'
+              : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10'
+              }`}
+          >
             All Subjects
           </button>
-          <button className="px-4 py-2 bg-white/5 text-gray-400 border border-white/10 rounded-lg text-sm hover:bg-white/10 transition-colors">
-            Physics
-          </button>
-          <button className="px-4 py-2 bg-white/5 text-gray-400 border border-white/10 rounded-lg text-sm hover:bg-white/10 transition-colors">
-            Mathematics
-          </button>
-          <button className="px-4 py-2 bg-white/5 text-gray-400 border border-white/10 rounded-lg text-sm hover:bg-white/10 transition-colors">
-            Chemistry
-          </button>
+          {['Physics', 'Math'].map(subject => (
+            <button
+              key={subject}
+              onClick={() => setSelectedSubject(selectedSubject === subject ? null : subject)}
+              className={`px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${selectedSubject === subject
+                ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30'
+                : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10'
+                }`}
+            >
+              {subject}
+            </button>
+          ))}
+        </div>
+
+        {/* Results count */}
+        <div className="text-sm text-gray-500 mb-4">
+          Showing {filteredProblems.length} of {mockProblems.length} problems
         </div>
 
         {/* Problems Grid */}
         <div className="grid gap-4">
-          {mockProblems.map((problem) => (
+          {filteredProblems.map((problem) => (
             <Link
               key={problem.id}
               href={`/problems/${problem.id}`}
