@@ -1,6 +1,6 @@
 'use client';
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Mock user data
 const userData = {
@@ -33,6 +33,24 @@ const statusColors: Record<string, string> = {
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'reviews' | 'stats'>('overview');
+  const [stats, setStats] = useState({
+    solved: 0,
+    reviews: 0,
+    streak: 14, // Retaining mock streak for encouragement
+    accuracy: 78 // Retaining mock accuracy
+  });
+
+  useEffect(() => {
+    // Load real stats from local storage
+    const solved = JSON.parse(localStorage.getItem('study_vault_solved') || '[]');
+    const reviews = JSON.parse(localStorage.getItem('study_vault_reviews') || '[]');
+
+    setStats(prev => ({
+      ...prev,
+      solved: solved.length,
+      reviews: reviews.length
+    }));
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0b0e14] text-white">
@@ -53,27 +71,42 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Welcome */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Welcome back, {userData.name}! 👋</h1>
-          <p className="text-gray-400">Your learning journey continues. You're on a {userData.streakDays}-day streak!</p>
+        <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Welcome back, Student! 👋</h1>
+            <p className="text-gray-400">Your learning journey continues. You're on a {stats.streak}-day streak!</p>
+          </div>
+
+          <Link href={`/problems/phys-${String(Math.floor(Math.random() * 30) + 1).padStart(3, '0')}`} className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 p-1 transition-all hover:scale-105">
+            <div className="relative h-full w-full rounded-lg bg-black/40 px-6 py-4 backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">🔥</span>
+                <div>
+                  <div className="font-bold text-white">Daily Challenge</div>
+                  <div className="text-xs text-indigo-200">Solve a random physics problem</div>
+                </div>
+                <div className="ml-2 text-white/50 group-hover:translate-x-1 transition-transform">→</div>
+              </div>
+            </div>
+          </Link>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 rounded-xl p-5">
-            <div className="text-3xl font-bold text-indigo-400">{userData.problemsSolved}</div>
+            <div className="text-3xl font-bold text-indigo-400">{stats.solved}</div>
             <div className="text-sm text-gray-400 mt-1">Problems Solved</div>
           </div>
           <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-xl p-5">
-            <div className="text-3xl font-bold text-green-400">{userData.accuracy}%</div>
+            <div className="text-3xl font-bold text-green-400">{stats.accuracy}%</div>
             <div className="text-sm text-gray-400 mt-1">Accuracy Rate</div>
           </div>
           <div className="bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-xl p-5">
-            <div className="text-3xl font-bold text-orange-400">{userData.streakDays}</div>
+            <div className="text-3xl font-bold text-orange-400">{stats.streak}</div>
             <div className="text-sm text-gray-400 mt-1">Day Streak 🔥</div>
           </div>
           <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-xl p-5">
-            <div className="text-3xl font-bold text-purple-400">{userData.rank}</div>
+            <div className="text-3xl font-bold text-purple-400">Top 5%</div>
             <div className="text-sm text-gray-400 mt-1">Global Rank</div>
           </div>
         </div>
@@ -85,8 +118,8 @@ export default function DashboardPage() {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${activeTab === tab
-                  ? 'bg-indigo-500/20 text-indigo-400'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                ? 'bg-indigo-500/20 text-indigo-400'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -123,7 +156,7 @@ export default function DashboardPage() {
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <span>🧠</span> Spaced Repetition Queue
               <span className="ml-auto bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded text-sm">
-                {userData.reviewQueue} due
+                {stats.reviews} due
               </span>
             </h2>
             <div className="space-y-3">
@@ -131,8 +164,8 @@ export default function DashboardPage() {
                 <div key={i} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                   <div className="font-medium">{review.title}</div>
                   <div className={`text-sm px-2 py-0.5 rounded ${review.urgency === 'high' ? 'bg-red-500/20 text-red-400' :
-                      review.urgency === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                        'bg-gray-500/20 text-gray-400'
+                    review.urgency === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                      'bg-gray-500/20 text-gray-400'
                     }`}>
                     {review.dueIn}
                   </div>

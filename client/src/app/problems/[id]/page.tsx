@@ -55,6 +55,47 @@ export default function ProblemDetailPage() {
     }
   }, [params.id]);
 
+  // State for interaction
+  const [isSolved, setIsSolved] = useState(false);
+  const [inReview, setInReview] = useState(false);
+
+  // Check status on mount
+  useEffect(() => {
+    if (problem) {
+      const solved = localStorage.getItem('study_vault_solved');
+      const reviews = localStorage.getItem('study_vault_reviews');
+
+      if (solved && JSON.parse(solved).includes(problem.id)) setIsSolved(true);
+      if (reviews && JSON.parse(reviews).includes(problem.id)) setInReview(true);
+    }
+  }, [problem]);
+
+  const toggleSolved = () => {
+    if (!problem) return;
+    const current = JSON.parse(localStorage.getItem('study_vault_solved') || '[]');
+    let updated;
+    if (isSolved) {
+      updated = current.filter((id: string) => id !== problem.id);
+    } else {
+      updated = [...current, problem.id];
+    }
+    localStorage.setItem('study_vault_solved', JSON.stringify(updated));
+    setIsSolved(!isSolved);
+  };
+
+  const toggleReview = () => {
+    if (!problem) return;
+    const current = JSON.parse(localStorage.getItem('study_vault_reviews') || '[]');
+    let updated;
+    if (inReview) {
+      updated = current.filter((id: string) => id !== problem.id);
+    } else {
+      updated = [...current, problem.id];
+    }
+    localStorage.setItem('study_vault_reviews', JSON.stringify(updated));
+    setInReview(!inReview);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0b0e14] text-white flex items-center justify-center">
@@ -108,8 +149,8 @@ export default function ProblemDetailPage() {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-3">
             <span className={`px-3 py-1 text-sm font-medium rounded border ${problem.difficulty === 'Hard' ? 'bg-red-500/20 text-red-400 border-red-500/30' :
-                problem.difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
-                  'bg-green-500/20 text-green-400 border-green-500/30'
+              problem.difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
+                'bg-green-500/20 text-green-400 border-green-500/30'
               }`}>
               {problem.difficulty}
             </span>
@@ -174,11 +215,23 @@ export default function ProblemDetailPage() {
 
         {/* Action Buttons */}
         <div className="flex gap-4 mt-8">
-          <button className="flex-1 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-semibold hover:opacity-90 transition-opacity">
-            ✓ Mark as Solved
+          <button
+            onClick={toggleSolved}
+            className={`flex-1 py-3 rounded-xl font-semibold transition-all ${isSolved
+                ? 'bg-green-500 text-white hover:bg-green-600'
+                : 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:opacity-90'
+              }`}
+          >
+            {isSolved ? '✓ Solved' : '○ Mark as Solved'}
           </button>
-          <button className="flex-1 py-3 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 transition-colors">
-            ⏰ Add to Review Queue
+          <button
+            onClick={toggleReview}
+            className={`flex-1 py-3 rounded-xl font-semibold transition-colors ${inReview
+                ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/50'
+                : 'bg-white/10 text-white hover:bg-white/20'
+              }`}
+          >
+            {inReview ? '⏰ In Review Queue' : '⏰ Add to Review Queue'}
           </button>
         </div>
 
