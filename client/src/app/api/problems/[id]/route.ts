@@ -3,8 +3,9 @@ import { problems } from '../../../../lib/data';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   const problem = problems.find(p => p.id === params.id);
 
   if (!problem) {
