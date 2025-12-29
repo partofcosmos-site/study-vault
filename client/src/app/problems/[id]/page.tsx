@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import { ReviewItem, createReviewItem, calculateNextReview, ReviewQuality } from "../../../lib/spaced-repetition";
 
 // Types
 interface Solution {
@@ -58,15 +59,19 @@ export default function ProblemDetailPage() {
   // State for interaction
   const [isSolved, setIsSolved] = useState(false);
   const [inReview, setInReview] = useState(false);
+  const [showRating, setShowRating] = useState(false);
 
   // Check status on mount
   useEffect(() => {
     if (problem) {
       const solved = localStorage.getItem('study_vault_solved');
-      const reviews = localStorage.getItem('study_vault_reviews');
+      const reviews = localStorage.getItem('study_vault_smart_reviews'); // Updated key
 
       if (solved && JSON.parse(solved).includes(problem.id)) setIsSolved(true);
-      if (reviews && JSON.parse(reviews).includes(problem.id)) setInReview(true);
+      if (reviews) {
+        const reviewList = JSON.parse(reviews);
+        if (reviewList.some((r: ReviewItem) => r.id === problem.id)) setInReview(true);
+      }
     }
   }, [problem]);
 
@@ -83,17 +88,33 @@ export default function ProblemDetailPage() {
     setIsSolved(!isSolved);
   };
 
-  const toggleReview = () => {
+  const handleRating = (quality: ReviewQuality) => {
     if (!problem) return;
-    const current = JSON.parse(localStorage.getItem('study_vault_reviews') || '[]');
-    let updated;
-    if (inReview) {
-      updated = current.filter((id: string) => id !== problem.id);
-    } else {
-      updated = [...current, problem.id];
+
+    // Get current items
+    const stored = localStorage.getItem('study_vault_smart_reviews');
+    const reviews: ReviewItem[] = stored ? JSON.parse(stored) : [];
+
+    // Find or create item
+    let item = reviews.find(r => r.id === problem.id) || createReviewItem(problem.id);
+
+    // Calculate new state
+    const nextState = calculateNextReview(item, quality);
+
+    // Update storage
+    const updated = [
+      ...reviews.filter(r => r.id !== problem.id),
+      nextState
+    ];
+
+    localStorage.setItem('study_vault_smart_reviews', JSON.stringify(updated));
+    setInReview(true);
+    setShowRating(false);
+
+    // Also mark as solved if quality is good (Hard/Good/Easy)
+    if (quality >= 3 && !isSolved) {
+      toggleSolved();
     }
-    localStorage.setItem('study_vault_reviews', JSON.stringify(updated));
-    setInReview(!inReview);
   };
 
   if (loading) {
@@ -214,25 +235,40 @@ export default function ProblemDetailPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-4 mt-8">
-          <button
-            onClick={toggleSolved}
-            className={`flex-1 py-3 rounded-xl font-semibold transition-all ${isSolved
+        <div className="flex flex-col gap-4 mt-8">
+          <div className="flex gap-4">
+            <button
+              onClick={toggleSolved}
+              className={`flex-1 py-3 rounded-xl font-semibold transition-all ${isSolved
                 ? 'bg-green-500 text-white hover:bg-green-600'
                 : 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:opacity-90'
-              }`}
-          >
-            {isSolved ? '✓ Solved' : '○ Mark as Solved'}
-          </button>
-          <button
-            onClick={toggleReview}
-            className={`flex-1 py-3 rounded-xl font-semibold transition-colors ${inReview
-                ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/50'
+                }`}
+            >
+              {isSolved ? '✓ Solved' : '✓ Mark as Solved'}
+            </button>
+            <button
+              onClick={() => setShowRating(!showRating)}
+              className={`flex-1 py-3 rounded-xl font-semibold transition-colors ${inReview
+                ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/50'
                 : 'bg-white/10 text-white hover:bg-white/20'
-              }`}
-          >
-            {inReview ? '⏰ In Review Queue' : '⏰ Add to Review Queue'}
-          </button>
+                }`}
+            >
+              {inReview ? '🧠 Review Session' : '🧠 Start Memory Training'}
+            </button>
+          </div>
+
+          {/* Rating Interface */}
+          {showRating && (
+            <div className="bg-white/5 border border-white/10 p-4 rounded-xl animate-in fade-in slide-in-from-top-2">
+              <div className="text-center mb-3 text-sm text-gray-400">How difficult was this problem?</div>
+              <div className="grid grid-cols-4 gap-2">
+                <button onClick={() => handleRating(0)} className="p-2 rounded bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30">Again</button>
+                <button onClick={() => handleRating(3)} className="p-2 rounded bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border border-yellow-500/30">Hard</button>
+                <button onClick={() => handleRating(4)} className="p-2 rounded bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30">Good</button>
+                <button onClick={() => handleRating(5)} className="p-2 rounded bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30">Easy</button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Related Concepts */}

@@ -1,28 +1,14 @@
 'use client';
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { ReviewItem, getUrgencyColor, formatDueTime } from "../../lib/spaced-repetition";
 
-// Mock user data
-const userData = {
-  name: "Student",
-  streakDays: 14,
-  problemsSolved: 156,
-  accuracy: 78,
-  rank: "Top 5%",
-  reviewQueue: 8,
-};
-
+// Mock user data (could be fetched from API/localStorage in future)
 const recentProblems = [
   { id: "1", title: "Projectile Motion", status: "solved", score: 100 },
   { id: "2", title: "Integration by Parts", status: "reviewing", nextReview: "2h" },
   { id: "3", title: "EM Induction", status: "struggling", attempts: 3 },
   { id: "4", title: "Complex Numbers", status: "solved", score: 85 },
-];
-
-const upcomingReviews = [
-  { title: "Newton's Laws", dueIn: "Now", urgency: "high" },
-  { title: "Trigonometric Identities", dueIn: "2h", urgency: "medium" },
-  { title: "Wave Optics", dueIn: "Tomorrow", urgency: "low" },
 ];
 
 const statusColors: Record<string, string> = {
@@ -33,22 +19,43 @@ const statusColors: Record<string, string> = {
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'reviews' | 'stats'>('overview');
+
+  // Stats State
   const [stats, setStats] = useState({
     solved: 0,
     reviews: 0,
-    streak: 14, // Retaining mock streak for encouragement
-    accuracy: 78 // Retaining mock accuracy
+    streak: 14,
+    accuracy: 78
   });
+
+  // Review Queue State
+  const [reviewQueue, setReviewQueue] = useState<{ id: string, title: string, dueIn: string, color: string }[]>([]);
 
   useEffect(() => {
     // Load real stats from local storage
     const solved = JSON.parse(localStorage.getItem('study_vault_solved') || '[]');
-    const reviews = JSON.parse(localStorage.getItem('study_vault_reviews') || '[]');
+    const smartReviews: ReviewItem[] = JSON.parse(localStorage.getItem('study_vault_smart_reviews') || '[]');
+
+    // Filter and sort reviews
+    const now = Date.now();
+    const dueItems = smartReviews
+      .filter(item => item.dueDate < now + 24 * 60 * 60 * 1000) // Show items due within 24h
+      .sort((a, b) => a.dueDate - b.dueDate);
+
+    // Map to display format
+    const formattedQueue = dueItems.map(item => ({
+      id: item.id,
+      title: item.id.replace('phys-', 'Problem ').replace('math-', 'Math '), // Placeholder title logic
+      dueIn: formatDueTime(item.dueDate),
+      color: getUrgencyColor(item.dueDate)
+    }));
+
+    setReviewQueue(formattedQueue);
 
     setStats(prev => ({
       ...prev,
       solved: solved.length,
-      reviews: reviews.length
+      reviews: dueItems.length
     }));
   }, []);
 
@@ -160,21 +167,24 @@ export default function DashboardPage() {
               </span>
             </h2>
             <div className="space-y-3">
-              {upcomingReviews.map((review, i) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                  <div className="font-medium">{review.title}</div>
-                  <div className={`text-sm px-2 py-0.5 rounded ${review.urgency === 'high' ? 'bg-red-500/20 text-red-400' :
-                    review.urgency === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                      'bg-gray-500/20 text-gray-400'
-                    }`}>
-                    {review.dueIn}
+              {reviewQueue.length === 0 ? (
+                <div className="text-gray-500 text-center py-4">No reviews due right now! 🎉</div>
+              ) : (
+                reviewQueue.map((review, i) => (
+                  <div key={i} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                    <div className="font-medium">{review.title}</div>
+                    <div className={`text-sm px-2 py-0.5 rounded ${review.color}`}>
+                      {review.dueIn}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
-            <button className="w-full mt-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl font-semibold hover:opacity-90 transition-opacity">
-              Start Review Session
-            </button>
+            {reviewQueue.length > 0 && (
+              <Link href={`/problems/${reviewQueue[0].id}`} className="block w-full mt-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl font-semibold hover:opacity-90 transition-opacity text-center">
+                Start Review Session
+              </Link>
+            )}
           </div>
         </div>
 
