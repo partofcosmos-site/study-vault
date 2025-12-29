@@ -1,61 +1,84 @@
+'use client';
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
 
-// Mock problem data
-const problem = {
-  id: "1",
-  title: "Projectile Motion with Air Resistance",
-  subject: "Physics",
-  topic: "Mechanics",
-  difficulty: "Hard",
-  statement: `A ball is thrown at an angle of 45° with the horizontal from ground level with initial velocity v₀ = 20 m/s. 
+// Types
+interface Solution {
+  method: string;
+  content: string;
+}
 
-Assuming the air resistance is proportional to velocity (F_drag = -bv), where b = 0.1 kg/s:
+interface Problem {
+  id: string;
+  title: string;
+  subject: string;
+  topic: string;
+  difficulty: string;
+  solvedCount: number;
+  tags: string[];
+  statement?: string;
+  hints?: string[];
+  solutions?: Solution[];
+  relatedConcepts?: string[];
+}
 
-(a) Set up the differential equations of motion.
-(b) Find the maximum height reached.
-(c) Calculate the range and compare it with the case of no air resistance.
+const defaultHints = [
+  "Break down the problem into smaller parts",
+  "Recall fundamental principles related to this topic",
+  "Check units and dimensions"
+];
 
-Take g = 10 m/s².`,
-  hints: [
-    "Divide motion into x and y components",
-    "Use Newton's second law: ma = mg - bv",
-    "The terminal velocity concept may be useful"
-  ],
-  solutions: [
-    {
-      method: "Standard Approach",
-      content: `**Step 1: Setting up equations**
-      
-For x-direction: m(dv_x/dt) = -bv_x
-For y-direction: m(dv_y/dt) = -mg - bv_y
-
-**Step 2: Solving the differential equations**
-
-v_x(t) = v₀cos(45°) × e^(-bt/m)
-v_y(t) = (v₀sin(45°) + mg/b) × e^(-bt/m) - mg/b
-
-**Step 3: Maximum height**
-At maximum height, v_y = 0
-H_max ≈ 8.2 m (vs 10 m without air resistance)
-
-**Step 4: Range**
-R ≈ 35.4 m (vs 40 m without air resistance)`
-    },
-    {
-      method: "Energy Method (Alternative)",
-      content: `Using energy conservation with work done against air resistance...
-
-W_air = ∫F_drag · dr
-
-This approach gives approximate answers but provides physical insight into energy dissipation.`
-    }
-  ],
-  tags: ["JEE Advanced", "Kinematics", "Differential Equations"],
-  relatedConcepts: ["Air Resistance", "Terminal Velocity", "Projectile Motion"],
-  solvedBy: 1234
-};
+const defaultRelated = ["Mechanics", "Calculus", "Problem Solving"];
 
 export default function ProblemDetailPage() {
+  const params = useParams();
+  const [problem, setProblem] = useState<Problem | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProblem = async () => {
+      try {
+        const res = await fetch(`/api/problems/${params.id}`);
+        if (!res.ok) throw new Error('Problem not found');
+        const data = await res.json();
+        setProblem(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (params.id) {
+      fetchProblem();
+    }
+  }, [params.id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0b0e14] text-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+          <div className="text-gray-400">Loading problem...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!problem) {
+    return (
+      <div className="min-h-screen bg-[#0b0e14] text-white flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-4">Problem Not Found</h1>
+          <Link href="/problems" className="text-indigo-400 hover:text-indigo-300">
+            ← Back to Library
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0b0e14] text-white">
       {/* Header */}
@@ -65,8 +88,9 @@ export default function ProblemDetailPage() {
             StudyVault
           </Link>
           <nav className="flex gap-6">
-            <Link href="/problems" className="text-gray-400 hover:text-white transition-colors">Problems</Link>
+            <Link href="/problems" className="text-indigo-400 font-medium">Problems</Link>
             <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors">Dashboard</Link>
+            <Link href="/mission-control" className="text-green-400 font-mono text-sm">MISSION CONTROL</Link>
           </nav>
         </div>
       </header>
@@ -77,13 +101,16 @@ export default function ProblemDetailPage() {
         <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
           <Link href="/problems" className="hover:text-white">Problems</Link>
           <span>/</span>
-          <span className="text-white">{problem.title}</span>
+          <span className="text-white truncate max-w-[200px]">{problem.title}</span>
         </div>
 
         {/* Problem Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-3">
-            <span className="px-3 py-1 text-sm font-medium rounded bg-red-500/20 text-red-400 border border-red-500/30">
+            <span className={`px-3 py-1 text-sm font-medium rounded border ${problem.difficulty === 'Hard' ? 'bg-red-500/20 text-red-400 border-red-500/30' :
+                problem.difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
+                  'bg-green-500/20 text-green-400 border-green-500/30'
+              }`}>
               {problem.difficulty}
             </span>
             <span className="text-gray-500">{problem.subject} • {problem.topic}</span>
@@ -104,7 +131,7 @@ export default function ProblemDetailPage() {
             <span className="text-xl">📝</span> Problem Statement
           </h2>
           <div className="whitespace-pre-wrap text-gray-300 leading-relaxed font-mono text-sm">
-            {problem.statement}
+            {problem.statement || "No statement available."}
           </div>
         </div>
 
@@ -114,7 +141,7 @@ export default function ProblemDetailPage() {
             <span className="text-xl">💡</span> Hints
           </h2>
           <ul className="space-y-2">
-            {problem.hints.map((hint, i) => (
+            {(problem.hints || defaultHints).map((hint, i) => (
               <li key={i} className="flex items-start gap-2 text-gray-300">
                 <span className="text-yellow-400 font-bold">{i + 1}.</span>
                 {hint}
@@ -129,7 +156,7 @@ export default function ProblemDetailPage() {
             <span>✨</span> Solutions
           </h2>
 
-          {problem.solutions.map((solution, i) => (
+          {(problem.solutions || []).map((solution, i) => (
             <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-6">
               <h3 className="text-lg font-semibold mb-4 text-indigo-400">
                 Method {i + 1}: {solution.method}
@@ -139,6 +166,10 @@ export default function ProblemDetailPage() {
               </div>
             </div>
           ))}
+
+          {(!problem.solutions || problem.solutions.length === 0) && (
+            <div className="text-gray-500 italic">No solution provided yet.</div>
+          )}
         </div>
 
         {/* Action Buttons */}
@@ -155,7 +186,7 @@ export default function ProblemDetailPage() {
         <div className="mt-12">
           <h2 className="text-lg font-semibold mb-4">Related Concepts</h2>
           <div className="flex gap-2">
-            {problem.relatedConcepts.map((concept) => (
+            {(problem.relatedConcepts || defaultRelated).map((concept) => (
               <span key={concept} className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-400 hover:text-white transition-colors cursor-pointer">
                 {concept}
               </span>
