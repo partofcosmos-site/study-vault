@@ -385,5 +385,404 @@
                 "content": "S = n(n+1)/2 = 50*51/2 = 1275."
             }
         ]
+    },
+    {
+        "id": "phys-020",
+        "title": "Gravitation: Escape Velocity",
+        "subject": "Physics",
+        "topic": "Gravitation",
+        "difficulty": "Easy",
+        "solvedCount": 3100,
+        "tags": [
+            "NEET",
+            "Gravitation"
+        ],
+        "statement": "Calculate escape velocity from a planet with mass 2M and radius R/2, where M, R are Earth's mass and radius.",
+        "solutions": [
+            {
+                "method": "Formula Comparison",
+                "content": "v_e = √(2GM/R). v' = √(2G(2M)/(R/2)) = √(8GM/R) = 2√(2GM/R) = 2v_e = 22.4 km/s."
+            }
+        ]
+    },
+    {
+        "id": "math-020",
+        "title": "Vector Algebra: Projection",
+        "subject": "Math",
+        "topic": "Vectors",
+        "difficulty": "Easy",
+        "solvedCount": 3900,
+        "tags": [
+            "JEE Main",
+            "Vectors"
+        ],
+        "statement": "Find the projection of vector a = 2i + 3j + 2k on vector b = i + 2j + k.",
+        "solutions": [
+            {
+                "method": "Formula",
+                "content": "Proj = (a.b)/|b| = (2*1 + 3*2 + 2*1) / √(1+4+1) = 10/√6."
+            }
+        ]
+    },
+    {
+        "id": "phys-021",
+        "title": "Current Electricity: Wheatstone Bridge",
+        "subject": "Physics",
+        "topic": "Electricity",
+        "difficulty": "Medium",
+        "solvedCount": 2400,
+        "tags": [
+            "JEE Main",
+            "Current Electricity"
+        ],
+        "statement": "In a balanced Wheatstone bridge, P=10, Q=20, R=5. Find S.",
+        "solutions": [
+            {
+                "method": "Balance Condition",
+                "content": "P/Q = R/S => 10/20 = 5/S => S = 10 ohms."
+            }
+        ]
+    },
+    {
+        "id": "math-021",
+        "title": "3D Geometry: Shortest Distance",
+        "subject": "Math",
+        "topic": "3D Geometry",
+        "difficulty": "Hard",
+        "solvedCount": 1300,
+        "tags": [
+            "JEE Advanced",
+            "3D Geometry"
+        ],
+        "statement": "Find the shortest distance between skew lines r = a + λb and r = c + μd.",
+        "solutions": [
+            {
+                "method": "Vector Formula",
+                "content": "d = |(c-a).(b x d)| / |b x d|."
+            }
+        ]
+    },
+    {
+        "id": "phys-022",
+        "title": "Magnetism: Force on Wire",
+        "subject": "Physics",
+        "topic": "Magnetism",
+        "difficulty": "Medium",
+        "solvedCount": 2000,
+        "tags": [
+            "NEET",
+            "Magnetism"
+        ],
+        "statement": "A wire of length L carrying current I is placed in uniform B perpendicular to it. Find force.",
+        "solutions": [
+            {
+                "method": "Formula",
+                "content": "F = ILB sin(90) = ILB."
+            }
+        ]
+    },
+    {
+        "id": "math-022",
+        "title": "Statistics: Variance",
+        "subject": "Math",
+        "topic": "Statistics",
+        "difficulty": "Medium",
+        "solvedCount": 1700,
+        "tags": [
+            "JEE Main",
+            "Statistics"
+        ],
+        "statement": "Find variance of first n natural numbers.",
+        "solutions": [
+            {
+                "method": "Formula",
+                "content": "Var = (n² - 1)/12."
+            }
+        ]
+    },
+    {
+        "id": "phys-023",
+        "title": "Ray Optics: Prism deviation",
+        "subject": "Physics",
+        "topic": "Optics",
+        "difficulty": "Easy",
+        "solvedCount": 2800,
+        "tags": [
+            "JEE Main",
+            "Optics"
+        ],
+        "statement": "For a thin prism of angle A and refractive index μ, find deviation.",
+        "solutions": [
+            {
+                "method": "Formula",
+                "content": "δ = (μ - 1)A."
+            }
+        ]
+    },
+    {
+        "id": "math-023",
+        "title": "Relations: Equivalence",
+        "subject": "Math",
+        "topic": "Relations",
+        "difficulty": "Easy",
+        "solvedCount": 4000,
+        "tags": [
+            "JEE Main",
+            "Relations"
+        ],
+        "statement": "Is the relation R = {(a,b): a - b is integer} an equivalence relation?",
+        "solutions": [
+            {
+                "method": "Check Properties",
+                "content": "Reflexive: a-a=0 (int). Symmetric: a-b int => b-a int. Transitive: a-b, b-c int => a-c int. Yes."
+            }
+        ]
+    },
+    {
+        "id": "phys-024",
+        "title": "Modern Physics: Half Life",
+        "subject": "Physics",
+        "topic": "Nuclear Physics",
+        "difficulty": "Easy",
+        "solvedCount": 3300,
+        "tags": [
+            "NEET",
+            "Modern Physics"
+        ],
+        "statement": "If half life is T, how much sample remains after 2T?",
+        "solutions": [
+            {
+                "method": "Logic",
+                "content": "After T: 50%. After 2T: 25% or 1/4th."
+            }
+        ]
+    },
+    {
+        "id": "math-024",
+        "title": "Inverse Trig: Principal Value",
+        "subject": "Math",
+        "topic": "Trigonometry",
+        "difficulty": "Medium",
+        "solvedCount": 2200,
+        "tags": [
+            "JEE Main",
+            "Inverse Trig"
+        ],
+        "statement": "Find principal value of sin⁻¹(sin(2π/3)).",
+        "solutions": [
+            {
+                "method": "Range Check",
+                "content": "Range is [-π/2, π/2]. 2π/3 is outside. sin(2π/3) = sin(π - π/3) = sin(π/3). So yield π/3."
+            }
+        ]
+    },
+    {
+        "id": "phys-025",
+        "title": "Semiconductors: Logic Gates",
+        "subject": "Physics",
+        "topic": "Semiconductors",
+        "difficulty": "Easy",
+        "solvedCount": 4200,
+        "tags": [
+            "JEE Main",
+            "Semiconductors"
+        ],
+        "statement": "Identify the gate: Y = NOT(A AND B).",
+        "solutions": [
+            {
+                "method": "Definition",
+                "content": "NAND Gate."
+            }
+        ]
+    },
+    {
+        "id": "math-025",
+        "title": "Matrices: Transpose Properties",
+        "subject": "Math",
+        "topic": "Algebra",
+        "difficulty": "Easy",
+        "solvedCount": 3800,
+        "tags": [
+            "JEE Main",
+            "Matrices"
+        ],
+        "statement": "If A is symmetric, what is A - A^T?",
+        "solutions": [
+            {
+                "method": "Definition",
+                "content": "A^T = A. So A - A = 0 (Null Matrix)."
+            }
+        ]
+    },
+    {
+        "id": "phys-026",
+        "title": "Thermodynamics: Work Done",
+        "subject": "Physics",
+        "topic": "Thermodynamics",
+        "difficulty": "Medium",
+        "solvedCount": 1900,
+        "tags": [
+            "JEE Main",
+            "Thermodynamics"
+        ],
+        "statement": "Calculate work done in isothermal expansion from V1 to V2.",
+        "solutions": [
+            {
+                "method": "Integration",
+                "content": "W = nRT ln(V2/V1)."
+            }
+        ]
+    },
+    {
+        "id": "math-026",
+        "title": "Continuity and Differentiability",
+        "subject": "Math",
+        "topic": "Calculus",
+        "difficulty": "Medium",
+        "solvedCount": 2100,
+        "tags": [
+            "JEE Main",
+            "Calculus"
+        ],
+        "statement": "Check continuity of f(x) = |x| at x=0.",
+        "solutions": [
+            {
+                "method": "Limits",
+                "content": "LHL = RHL = f(0) = 0. Continuous."
+            }
+        ]
+    },
+    {
+        "id": "phys-027",
+        "title": "Waves: Standing Waves",
+        "subject": "Physics",
+        "topic": "Waves",
+        "difficulty": "Hard",
+        "solvedCount": 1200,
+        "tags": [
+            "JEE Advanced",
+            "Waves"
+        ],
+        "statement": "String fixed at both ends oscillates in 3rd harmonic. How many nodes?",
+        "solutions": [
+            {
+                "method": "Counting",
+                "content": "3 loops. Nodes at ends + 2 between. Total 4 nodes."
+            }
+        ]
+    },
+    {
+        "id": "math-027",
+        "title": "Binomial Theorem: Middle Term",
+        "subject": "Math",
+        "topic": "Algebra",
+        "difficulty": "Medium",
+        "solvedCount": 2600,
+        "tags": [
+            "JEE Main",
+            "Binomial Theorem"
+        ],
+        "statement": "Find middle term in (1 + x)^10.",
+        "solutions": [
+            {
+                "method": "Formula",
+                "content": "n=10 (even). Middle term is (n/2 + 1) = 6th term. T6 = 10C5 x^5."
+            }
+        ]
+    },
+    {
+        "id": "phys-028",
+        "title": "Capacitance: Energy Stored",
+        "subject": "Physics",
+        "topic": "Electrostatics",
+        "difficulty": "Easy",
+        "solvedCount": 3400,
+        "tags": [
+            "NEET",
+            "Electrostatics"
+        ],
+        "statement": "Energy stored in capacitor C charged to V.",
+        "solutions": [
+            {
+                "method": "Formula",
+                "content": "U = 1/2 CV²."
+            }
+        ]
+    },
+    {
+        "id": "math-028",
+        "title": "Circles: Tangent Condition",
+        "subject": "Math",
+        "topic": "Coordinate Geometry",
+        "difficulty": "Medium",
+        "solvedCount": 2300,
+        "tags": [
+            "JEE Main",
+            "Circles"
+        ],
+        "statement": "Condition for y = mx + c to touch x² + y² = a².",
+        "solutions": [
+            {
+                "method": "Distance Formula",
+                "content": "Perpendicular distance from center (0,0) equals radius a. c² = a²(1 + m²)."
+            }
+        ]
+    },
+    {
+        "id": "phys-029",
+        "title": "Collision: Elastic Head On",
+        "subject": "Physics",
+        "topic": "Mechanics",
+        "difficulty": "Medium",
+        "solvedCount": 2500,
+        "tags": [
+            "JEE Main",
+            "Collision"
+        ],
+        "statement": "Two equal masses, one at rest, undergo elastic head-on collision. Velocities after?",
+        "solutions": [
+            {
+                "method": "Property",
+                "content": "Velocities are exchanged. First stops, second moves with v."
+            }
+        ]
+    },
+    {
+        "id": "math-029",
+        "title": "Linear Programming: Maximize Z",
+        "subject": "Math",
+        "topic": "Optimization",
+        "difficulty": "Easy",
+        "solvedCount": 4500,
+        "tags": [
+            "Board",
+            "LPP"
+        ],
+        "statement": "Maximize Z = 3x + 4y subject to x + y <= 4, x, y >= 0.",
+        "solutions": [
+            {
+                "method": "Corner Point",
+                "content": "Points: (0,0), (4,0), (0,4). Z values: 0, 12, 16. Max is 16 at (0,4)."
+            }
+        ]
+    },
+    {
+        "id": "phys-030",
+        "title": "Units and Dimensions",
+        "subject": "Physics",
+        "topic": "Basics",
+        "difficulty": "Easy",
+        "solvedCount": 5000,
+        "tags": [
+            "NEET",
+            "Units"
+        ],
+        "statement": "Dimension of Planck's constant h.",
+        "solutions": [
+            {
+                "method": "Formula",
+                "content": "E = hν => h = E/ν. [ML²T⁻²] / [T⁻¹] = [ML²T⁻¹]."
+            }
+        ]
     }
 ]
