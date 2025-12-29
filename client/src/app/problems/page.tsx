@@ -1,6 +1,10 @@
 'use client';
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useKeyboardNavigation } from "../../hooks/useKeyboardNavigation";
+
+
 
 // Types for our problem data
 interface Solution {
@@ -31,6 +35,13 @@ export default function ProblemsPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+
+  // Keyboard Navigation
+  const router = useRouter();
+  const selectedIndex = useKeyboardNavigation(
+    problems.length,
+    (index) => router.push(`/problems/${problems[index].id}`)
+  );
 
   useEffect(() => {
     const fetchProblems = async () => {
@@ -98,8 +109,8 @@ export default function ProblemsPage() {
           <button
             onClick={() => setSelectedSubject(null)}
             className={`px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${!selectedSubject
-                ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30'
-                : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10'
+              ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30'
+              : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10'
               }`}
           >
             All Subjects
@@ -109,8 +120,8 @@ export default function ProblemsPage() {
               key={subject}
               onClick={() => setSelectedSubject(selectedSubject === subject ? null : subject)}
               className={`px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${selectedSubject === subject
-                  ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30'
-                  : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10'
+                ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30'
+                : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10'
                 }`}
             >
               {subject}
@@ -135,7 +146,7 @@ export default function ProblemsPage() {
               No problems found matching your criteria.
             </div>
           ) : (
-            problems.map((problem) => (
+            problems.map((problem, index) => (
               <Link
                 key={problem.id}
                 href={`/problems/${problem.id}`}
@@ -143,7 +154,8 @@ export default function ProblemsPage() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="flex items-center gap-2 mb-2">
+                      {index === selectedIndex && <span className="text-indigo-400">▶</span>}
                       <span className={`px-2 py-0.5 text-xs font-medium rounded border ${difficultyColors[problem.difficulty]}`}>
                         {problem.difficulty}
                       </span>
