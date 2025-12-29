@@ -1,150 +1,168 @@
-"use client";
+import Link from "next/link";
 
-import { useState, useEffect } from "react";
+// Mock problem data
+const problem = {
+  id: "1",
+  title: "Projectile Motion with Air Resistance",
+  subject: "Physics",
+  topic: "Mechanics",
+  difficulty: "Hard",
+  statement: `A ball is thrown at an angle of 45° with the horizontal from ground level with initial velocity v₀ = 20 m/s. 
 
-// Mock types matching DB schema roughly
-interface Solution {
-  id: string;
-  solution_number: number;
-  approach_name: string;
-  solution_text: string;
-  difficulty_to_understand: number;
-  upvotes: number;
-}
+Assuming the air resistance is proportional to velocity (F_drag = -bv), where b = 0.1 kg/s:
 
-interface ProblemDetail {
-  id: string;
-  problem_number: string;
-  exam_type: string;
-  exam_year: number;
-  subject: string;
-  chapter: string;
-  difficulty_level: number;
-  problem_statement: string;
-  success_rate: number;
-  solutions: Solution[];
-}
+(a) Set up the differential equations of motion.
+(b) Find the maximum height reached.
+(c) Calculate the range and compare it with the case of no air resistance.
 
-export default function ProblemDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const [problem, setProblem] = useState<ProblemDetail | null>(null);
-  const [activeTab, setActiveTab] = useState<"solutions" | "concepts">(
-    "solutions",
-  );
+Take g = 10 m/s².`,
+  hints: [
+    "Divide motion into x and y components",
+    "Use Newton's second law: ma = mg - bv",
+    "The terminal velocity concept may be useful"
+  ],
+  solutions: [
+    {
+      method: "Standard Approach",
+      content: `**Step 1: Setting up equations**
+      
+For x-direction: m(dv_x/dt) = -bv_x
+For y-direction: m(dv_y/dt) = -mg - bv_y
 
-  useEffect(() => {
-    const fetchProblem = async () => {
-      try {
-        // Note: params.id is available directly in client component props usually,
-        // but checking Next.js 15 async params, we might need to await 'params' prop if we used it directly.
-        // However, in 'page.tsx' (Server Component) we await params.
-        // This is a client component ('use client'). It receives 'params' as prop.
-        // In generic Next.js, props to client components are not promises.
-        // So using params.id directly is fine here.
+**Step 2: Solving the differential equations**
 
-        const res = await fetch(`/api/problems/${params.id}`);
-        if (!res.ok) throw new Error("Problem not found");
-        const data = await res.json();
-        setProblem(data);
-      } catch (error) {
-        console.error("Failed to fetch problem", error);
-      }
-    };
-    fetchProblem();
-  }, [params.id]);
+v_x(t) = v₀cos(45°) × e^(-bt/m)
+v_y(t) = (v₀sin(45°) + mg/b) × e^(-bt/m) - mg/b
 
-  if (!problem)
-    return <div className="min-h-screen pt-24 text-center">Loading...</div>;
+**Step 3: Maximum height**
+At maximum height, v_y = 0
+H_max ≈ 8.2 m (vs 10 m without air resistance)
 
+**Step 4: Range**
+R ≈ 35.4 m (vs 40 m without air resistance)`
+    },
+    {
+      method: "Energy Method (Alternative)",
+      content: `Using energy conservation with work done against air resistance...
+
+W_air = ∫F_drag · dr
+
+This approach gives approximate answers but provides physical insight into energy dissipation.`
+    }
+  ],
+  tags: ["JEE Advanced", "Kinematics", "Differential Equations"],
+  relatedConcepts: ["Air Resistance", "Terminal Velocity", "Projectile Motion"],
+  solvedBy: 1234
+};
+
+export default function ProblemDetailPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground pt-20 pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-8">
-        {/* Left Panel: Problem Statement */}
-        <div className="lg:w-1/2 space-y-6">
-          <div className="bg-card border border-white/10 rounded-2xl p-8 shadow-2xl">
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <div className="flex items-center space-x-2 mb-2">
-                  <span className="text-xs font-mono bg-primary/20 text-primary px-2 py-1 rounded">
-                    {problem.exam_type} {problem.exam_year}
-                  </span>
-                  <span className="text-xs text-gray-400">•</span>
-                  <span className="text-xs text-gray-400">
-                    {problem.subject} / {problem.chapter}
-                  </span>
-                </div>
-                <h1 className="text-2xl font-bold">{problem.problem_number}</h1>
-              </div>
-              <div className="flex items-center space-x-1">
-                <span className="text-yellow-400 font-bold">
-                  {problem.difficulty_level}/5
-                </span>
-                <span className="text-gray-500 text-xs">Difficulty</span>
-              </div>
-            </div>
+    <div className="min-h-screen bg-[#0b0e14] text-white">
+      {/* Header */}
+      <header className="border-b border-white/10 bg-black/40 backdrop-blur-lg sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+          <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+            StudyVault
+          </Link>
+          <nav className="flex gap-6">
+            <Link href="/problems" className="text-gray-400 hover:text-white transition-colors">Problems</Link>
+            <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors">Dashboard</Link>
+          </nav>
+        </div>
+      </header>
 
-            <div className="prose prose-invert max-w-none mb-8">
-              <p className="text-lg leading-relaxed whitespace-pre-line">
-                {problem.problem_statement}
-              </p>
-            </div>
+      {/* Main Content */}
+      <main className="max-w-5xl mx-auto px-4 py-8">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+          <Link href="/problems" className="hover:text-white">Problems</Link>
+          <span>/</span>
+          <span className="text-white">{problem.title}</span>
+        </div>
 
-            <div className="flex items-center justify-between border-t border-white/5 pt-4">
-              <div className="text-sm text-gray-400">
-                Success Rate:{" "}
-                <span className="text-green-400">{problem.success_rate}%</span>
-              </div>
-              <button className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-                Start Solving
-              </button>
-            </div>
+        {/* Problem Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="px-3 py-1 text-sm font-medium rounded bg-red-500/20 text-red-400 border border-red-500/30">
+              {problem.difficulty}
+            </span>
+            <span className="text-gray-500">{problem.subject} • {problem.topic}</span>
+          </div>
+          <h1 className="text-3xl font-bold mb-4">{problem.title}</h1>
+          <div className="flex gap-2">
+            {problem.tags.map((tag) => (
+              <span key={tag} className="text-xs px-2 py-1 bg-indigo-500/20 text-indigo-400 rounded">
+                {tag}
+              </span>
+            ))}
           </div>
         </div>
 
-        {/* Right Panel: Solutions & Concepts */}
-        <div className="lg:w-1/2">
-          <div className="bg-card border border-white/10 rounded-2xl p-6 h-full">
-            <div className="flex space-x-4 border-b border-white/10 pb-4 mb-6">
-              <button
-                onClick={() => setActiveTab("solutions")}
-                className={`pb-2 text-sm font-medium transition-colors ${activeTab === "solutions" ? "text-primary border-b-2 border-primary" : "text-gray-400 hover:text-white"}`}
-              >
-                Solutions ({problem.solutions.length})
-              </button>
-              <button
-                onClick={() => setActiveTab("concepts")}
-                className={`pb-2 text-sm font-medium transition-colors ${activeTab === "concepts" ? "text-primary border-b-2 border-primary" : "text-gray-400 hover:text-white"}`}
-              >
-                Prerequisites
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {problem.solutions.map((sol) => (
-                <div
-                  key={sol.id}
-                  className="bg-secondary/50 rounded-xl p-6 border border-white/5 hover:border-primary/30 transition-all"
-                >
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-accent">
-                      {sol.approach_name}
-                    </h3>
-                    <span className="text-xs bg-white/10 px-2 py-1 rounded text-gray-400">
-                      {sol.upvotes} Upvotes
-                    </span>
-                  </div>
-                  <div className="prose prose-invert prose-sm">
-                    <p>{sol.solution_text}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+        {/* Problem Statement */}
+        <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-8">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <span className="text-xl">📝</span> Problem Statement
+          </h2>
+          <div className="whitespace-pre-wrap text-gray-300 leading-relaxed font-mono text-sm">
+            {problem.statement}
           </div>
         </div>
-      </div>
+
+        {/* Hints (Collapsible in real app) */}
+        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6 mb-8">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-yellow-400">
+            <span className="text-xl">💡</span> Hints
+          </h2>
+          <ul className="space-y-2">
+            {problem.hints.map((hint, i) => (
+              <li key={i} className="flex items-start gap-2 text-gray-300">
+                <span className="text-yellow-400 font-bold">{i + 1}.</span>
+                {hint}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Solutions */}
+        <div className="space-y-6">
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <span>✨</span> Solutions
+          </h2>
+
+          {problem.solutions.map((solution, i) => (
+            <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-6">
+              <h3 className="text-lg font-semibold mb-4 text-indigo-400">
+                Method {i + 1}: {solution.method}
+              </h3>
+              <div className="whitespace-pre-wrap text-gray-300 leading-relaxed">
+                {solution.content}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-4 mt-8">
+          <button className="flex-1 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-semibold hover:opacity-90 transition-opacity">
+            ✓ Mark as Solved
+          </button>
+          <button className="flex-1 py-3 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 transition-colors">
+            ⏰ Add to Review Queue
+          </button>
+        </div>
+
+        {/* Related Concepts */}
+        <div className="mt-12">
+          <h2 className="text-lg font-semibold mb-4">Related Concepts</h2>
+          <div className="flex gap-2">
+            {problem.relatedConcepts.map((concept) => (
+              <span key={concept} className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-400 hover:text-white transition-colors cursor-pointer">
+                {concept}
+              </span>
+            ))}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

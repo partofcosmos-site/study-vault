@@ -1,128 +1,146 @@
-"use client";
+import Link from "next/link";
 
-import { useState, useEffect } from "react";
-import { ProblemCard } from "../../components/ProblemCard";
+// Mock data for problems - no database needed
+const mockProblems = [
+  {
+    id: "1",
+    title: "Projectile Motion with Air Resistance",
+    subject: "Physics",
+    topic: "Mechanics",
+    difficulty: "Hard",
+    solvedCount: 1234,
+    tags: ["JEE Advanced", "Kinematics"],
+  },
+  {
+    id: "2",
+    title: "Integration by Parts: Advanced",
+    subject: "Math",
+    topic: "Calculus",
+    difficulty: "Medium",
+    solvedCount: 2456,
+    tags: ["JEE Main", "Integration"],
+  },
+  {
+    id: "3",
+    title: "Electromagnetic Induction in Rotating Coils",
+    subject: "Physics",
+    topic: "Electromagnetism",
+    difficulty: "Hard",
+    solvedCount: 876,
+    tags: ["JEE Advanced", "EMI"],
+  },
+  {
+    id: "4",
+    title: "Complex Numbers: Roots of Unity",
+    subject: "Math",
+    topic: "Algebra",
+    difficulty: "Medium",
+    solvedCount: 3124,
+    tags: ["JEE Main", "Complex Numbers"],
+  },
+  {
+    id: "5",
+    title: "Thermodynamics: Carnot Engine Efficiency",
+    subject: "Physics",
+    topic: "Thermodynamics",
+    difficulty: "Medium",
+    solvedCount: 1567,
+    tags: ["NEET", "JEE Main"],
+  },
+  {
+    id: "6",
+    title: "Differential Equations: First Order Linear",
+    subject: "Math",
+    topic: "Differential Equations",
+    difficulty: "Easy",
+    solvedCount: 4521,
+    tags: ["JEE Main", "Basics"],
+  },
+];
 
-interface Problem {
-  id: string;
-  problem_number: string;
-  topic: string;
-  difficulty_level: number;
-  success_rate: number;
-  solution_count: number;
-  tags: string[];
-}
+const difficultyColors: Record<string, string> = {
+  Easy: "bg-green-500/20 text-green-400 border-green-500/30",
+  Medium: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+  Hard: "bg-red-500/20 text-red-400 border-red-500/30",
+};
 
 export default function ProblemsPage() {
-  const [problems, setProblems] = useState<Problem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Filters
-  const [selectedSubject, setSelectedSubject] = useState<string>("All");
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");
-
-  useEffect(() => {
-    const fetchProblems = async () => {
-      setLoading(true);
-      try {
-        const params = new URLSearchParams();
-        if (selectedSubject !== "All")
-          params.append("subject", selectedSubject);
-
-        // Simple mapping for difficulty until backend supports ranges
-        if (selectedDifficulty !== "All") {
-          // Extract number if present e.g. "Medium (3)" -> "3"
-          const match = selectedDifficulty.match(/\d+/);
-          if (match) params.append("difficulty", match[0]);
-        }
-
-        const res = await fetch(`/api/problems?${params.toString()}`);
-        if (!res.ok) throw new Error("Failed to fetch");
-
-        const data = await res.json();
-        setProblems(data.data || []);
-      } catch (error) {
-        console.error("Failed to fetch problems", error);
-        // Fallback to empty or could keep mock data on error?
-        // Better to show empty so user knows connection failed/succeeded.
-        setProblems([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProblems();
-  }, [selectedSubject, selectedDifficulty]);
-
   return (
-    <div className="min-h-screen bg-background text-foreground pt-20 pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Sidebar Filters */}
-          <div className="w-full md:w-64 shrink-0">
-            <div className="sticky top-24 bg-card border border-white/5 rounded-xl p-6 shadow-xl">
-              <h3 className="font-bold text-lg mb-4">Filters</h3>
-
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Subject
-                </label>
-                <select
-                  value={selectedSubject}
-                  onChange={(e) => setSelectedSubject(e.target.value)}
-                  className="w-full bg-secondary border-none rounded-lg p-2 text-sm focus:ring-2 focus:ring-primary"
-                >
-                  <option>All</option>
-                  <option>Physics</option>
-                  <option>Chemistry</option>
-                  <option>Mathematics</option>
-                </select>
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Difficulty
-                </label>
-                <select
-                  value={selectedDifficulty}
-                  onChange={(e) => setSelectedDifficulty(e.target.value)}
-                  className="w-full bg-secondary border-none rounded-lg p-2 text-sm focus:ring-2 focus:ring-primary"
-                >
-                  <option>All</option>
-                  <option>Easy (1-2)</option>
-                  <option>Medium (3)</option>
-                  <option>Hard (4-5)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <div className="flex-1">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-3xl font-bold">Browse Problems</h1>
-              <span className="text-gray-400">{problems.length} results</span>
-            </div>
-
-            {loading ? (
-              <div className="grid gap-4">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="h-40 bg-card/50 rounded-xl animate-pulse"
-                  ></div>
-                ))}
-              </div>
-            ) : (
-              <div className="grid gap-4">
-                {problems.map((problem) => (
-                  <ProblemCard key={problem.id} problem={problem} />
-                ))}
-              </div>
-            )}
-          </div>
+    <div className="min-h-screen bg-[#0b0e14] text-white">
+      {/* Header */}
+      <header className="border-b border-white/10 bg-black/40 backdrop-blur-lg sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+          <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+            StudyVault
+          </Link>
+          <nav className="flex gap-6">
+            <Link href="/problems" className="text-indigo-400 font-medium">Problems</Link>
+            <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors">Dashboard</Link>
+            <Link href="/mission-control" className="text-green-400 font-mono text-sm">MISSION CONTROL</Link>
+          </nav>
         </div>
-      </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2">Problem Library</h1>
+          <p className="text-gray-400">Master {mockProblems.length}+ verified problems from JEE, NEET, and Olympiads</p>
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap gap-3 mb-8">
+          <button className="px-4 py-2 bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 rounded-lg text-sm font-medium">
+            All Subjects
+          </button>
+          <button className="px-4 py-2 bg-white/5 text-gray-400 border border-white/10 rounded-lg text-sm hover:bg-white/10 transition-colors">
+            Physics
+          </button>
+          <button className="px-4 py-2 bg-white/5 text-gray-400 border border-white/10 rounded-lg text-sm hover:bg-white/10 transition-colors">
+            Mathematics
+          </button>
+          <button className="px-4 py-2 bg-white/5 text-gray-400 border border-white/10 rounded-lg text-sm hover:bg-white/10 transition-colors">
+            Chemistry
+          </button>
+        </div>
+
+        {/* Problems Grid */}
+        <div className="grid gap-4">
+          {mockProblems.map((problem) => (
+            <Link
+              key={problem.id}
+              href={`/problems/${problem.id}`}
+              className="group p-6 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-indigo-500/30 transition-all"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className={`px-2 py-0.5 text-xs font-medium rounded border ${difficultyColors[problem.difficulty]}`}>
+                      {problem.difficulty}
+                    </span>
+                    <span className="text-gray-500 text-sm">{problem.subject} • {problem.topic}</span>
+                  </div>
+                  <h3 className="text-lg font-semibold group-hover:text-indigo-400 transition-colors">
+                    {problem.title}
+                  </h3>
+                  <div className="flex gap-2 mt-3">
+                    {problem.tags.map((tag) => (
+                      <span key={tag} className="text-xs px-2 py-1 bg-white/5 rounded text-gray-400">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-indigo-400">{problem.solvedCount.toLocaleString()}</div>
+                  <div className="text-xs text-gray-500">students solved</div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </main>
     </div>
   );
 }
