@@ -2,6 +2,10 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 import { ReviewItem, createReviewItem, calculateNextReview, ReviewQuality } from "../../../lib/spaced-repetition";
 
 // Types
@@ -192,8 +196,13 @@ export default function ProblemDetailPage() {
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <span className="text-xl">📝</span> Problem Statement
           </h2>
-          <div className="whitespace-pre-wrap text-gray-300 leading-relaxed font-mono text-sm">
-            {problem.statement || "No statement available."}
+          <div className="whitespace-pre-wrap text-gray-300 leading-relaxed font-mono text-sm [&_.katex]:text-indigo-300">
+            <ReactMarkdown
+              remarkPlugins={[remarkMath]}
+              rehypePlugins={[rehypeKatex]}
+            >
+              {problem.statement || "No statement available."}
+            </ReactMarkdown>
           </div>
         </div>
 
@@ -223,8 +232,13 @@ export default function ProblemDetailPage() {
               <h3 className="text-lg font-semibold mb-4 text-indigo-400">
                 Method {i + 1}: {solution.method}
               </h3>
-              <div className="whitespace-pre-wrap text-gray-300 leading-relaxed">
-                {solution.content}
+              <div className="whitespace-pre-wrap text-gray-300 leading-relaxed [&_.katex]:text-indigo-300">
+                <ReactMarkdown
+                  remarkPlugins={[remarkMath]}
+                  rehypePlugins={[rehypeKatex]}
+                >
+                  {solution.content}
+                </ReactMarkdown>
               </div>
             </div>
           ))}
