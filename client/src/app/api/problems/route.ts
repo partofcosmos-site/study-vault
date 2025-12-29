@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import { problems } from '../../../lib/data';
 
 export const dynamic = 'force-dynamic';
